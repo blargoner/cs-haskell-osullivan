@@ -2,7 +2,7 @@
 splitWith :: (a -> Bool) -> [a] -> [[a]]
 splitWith p [] = []
 splitWith p xs = let (pre, suf) = span p xs
-                    in pre : splitWith p (dropWhile (not . p) suf)
+                 in pre : splitWith p (dropWhile (not . p) suf)
 
 -- exercise 3
 firstWords :: String -> String
@@ -17,11 +17,19 @@ split (x:xs) = (x,xs)
 splits :: [[a]] -> ([a], [[a]])
 splits = (\ps -> (map fst ps, map snd ps)) . map split
 
-transpose :: [[a]] -> [[a]]
-transpose [] = []
-transpose xs = if any null xs then [] else
-                let (firsts, rests) = splits xs
-                in firsts : transpose rests
+swap :: [[a]] -> [[a]]
+swap [] = []
+swap xss = if any null xss
+           then []
+           else
+            let (firsts, rests) = splits xss
+            in firsts : swap rests
 
-transpose' :: String -> String
-transpose' = unlines . transpose . lines
+pad :: a -> [[a]] -> [[a]]
+pad x xss = map (contract . expand) xss
+    where expand xs = xs ++ repeat x
+          contract = take m
+          m = maximum $ map length xss
+
+transpose :: String -> String
+transpose = unlines . swap . (pad ' ') . lines
