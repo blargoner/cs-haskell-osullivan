@@ -33,3 +33,10 @@ pad x xss = map (contract . expand) xss
 
 transpose :: String -> String
 transpose = unlines . swap . (pad ' ') . lines
+
+-- left fold using right fold
+-- to produce the desired left associativity, we first construct a function by
+-- stacking (pre-composing) user fold operations from right to left, and then
+-- apply this function to the user initial value
+foldL :: (a -> b -> a) -> a -> [b] -> a
+foldL f z xs = foldr (\x g -> g . flip f x) id xs z
